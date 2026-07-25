@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fallout 2D20 - Pip-Boy OS TMA v9.0 (Multi-Slot)</title>
+    <title>Fallout 2D20 - Pip-Boy OS TMA v14.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
@@ -17,9 +17,10 @@
             --glitch-color-2: rgba(0, 80, 0, 0.8);
 
             --font: 'VT323', monospace;
-            --font-size-base: clamp(16px, 4vw, 24px);
-            --font-size-small: clamp(12px, 3vw, 18px);
-            --font-size-large: clamp(20px, 5vw, 32px);
+            /* Увеличенные шрифты на 2px базово */
+            --font-size-base: clamp(22px, 5vw, 26px);
+            --font-size-small: clamp(18px, 4vw, 20px);
+            --font-size-large: clamp(26px, 6vw, 34px);
         }
 
         [data-theme="amber"] {
@@ -59,7 +60,7 @@
 
         .burger-btn { position: fixed; top: 15px; right: 20px; z-index: 1001; cursor: pointer; background: var(--bg-color); border: 2px solid var(--theme-color); color: var(--theme-color); padding: 4px 10px; font-size: 24px; box-shadow: var(--theme-glow); transition: 0.3s; }
         .burger-btn:hover { background: var(--theme-color); color: var(--bg-color); }
-        .side-menu { position: fixed; top: 0; right: -320px; width: 320px; height: 100vh; background: var(--bg-color); border-left: 2px solid var(--theme-color); z-index: 1000; transition: right 0.3s ease; padding: 70px 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: -5px 0 30px rgba(0,0,0,0.9); }
+        .side-menu { position: fixed; top: 0; right: -320px; width: 320px; height: 100vh; background: var(--bg-color); border-left: 2px solid var(--theme-color); z-index: 1000; transition: right 0.3s ease; padding: 70px 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: -5px 0 30px rgba(0,0,0,0.9); overflow-y: auto;}
         .side-menu.open { right: 0; }
         .menu-title { font-size: var(--font-size-large); border-bottom: 2px solid var(--theme-color); padding-bottom: 5px; margin-bottom: 5px;}
         .pb-btn { padding: 8px; background: var(--theme-dim); color: var(--theme-color); border: 1px solid var(--theme-color); cursor: pointer; font-family: var(--font); text-transform: uppercase; transition: 0.2s; font-size: var(--font-size-base); text-shadow: var(--theme-glow); width: 100%; text-align: center; }
@@ -70,20 +71,24 @@
         .theme-dot[data-color="green"] { background: #21ff21; } .theme-dot[data-color="amber"] { background: #ffb000; } .theme-dot[data-color="white"] { background: #ffffff; }
 
         input, textarea, select { background: transparent; border: none; color: var(--theme-color); font-family: var(--font); text-shadow: inherit; font-size: inherit; }
+        input { user-select: auto; -webkit-user-select: auto; }
+        textarea { user-select: auto; -webkit-user-select: auto; }
+        
         input[type="text"] { border-bottom: 1px dashed var(--theme-dim); padding: 2px 5px; width: 100%; transition: 0.3s; }
         input[type="number"] { border-bottom: 1px dashed var(--theme-dim); text-align: center; width: 45px; -moz-appearance: textfield; }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input:focus, textarea:focus, select:focus { border-bottom-color: var(--theme-color); background: rgba(255, 255, 255, 0.05); }
         
-        select.pb-select { width: 100%; border: 1px solid var(--theme-color); padding: 8px; cursor: pointer; appearance: none; text-align: center; box-shadow: var(--theme-glow); }
+        select.pb-select { width: 100%; border: 1px solid var(--theme-color); padding: 8px; cursor: pointer; appearance: none; text-align: left; box-shadow: var(--theme-glow); }
         select.pb-select option { background: var(--bg-color); color: var(--theme-color); }
 
         textarea.auto-expand { border: 1px solid var(--theme-dim); width: 100%; min-height: 100px; resize: none; padding: 15px; overflow-y: hidden; display: block; line-height: 1.4; }
         .framed-box { border: 2px solid var(--theme-dim); padding: 15px 10px 10px 10px; position: relative; box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5); border-radius: 4px; }
-        .box-title { position: absolute; top: -14px; left: 12px; background: var(--bg-color); padding: 0 6px; font-weight: bold; font-size: var(--font-size-small); letter-spacing: 1px; }
+        .box-title { position: absolute; top: -14px; left: 12px; background: var(--bg-color); padding: 0 6px; font-weight: bold; font-size: var(--font-size-small); letter-spacing: 1px; z-index: 2;}
 
-        .tabs-header { display: flex; flex-wrap: nowrap; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid var(--theme-dim); }
-        .tab-btn { background: transparent; color: var(--theme-color); border: 2px solid transparent; border-bottom: none; padding: 8px 5px; font-family: var(--font); font-size: clamp(12px, 3vw, 20px); cursor: pointer; opacity: 0.5; text-transform: uppercase; text-shadow: var(--theme-glow); flex-grow: 1; text-align: center; transition: 0.3s; }
+        /* ТАБЫ */
+        .tabs-header { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid var(--theme-dim); }
+        .tab-btn { background: transparent; color: var(--theme-color); border: 2px solid transparent; border-bottom: none; padding: 8px 5px; font-family: var(--font); font-size: clamp(14px, 3vw, 22px); cursor: pointer; opacity: 0.5; text-transform: uppercase; text-shadow: var(--theme-glow); flex-grow: 1; text-align: center; transition: 0.3s; }
         .tab-btn:hover { opacity: 0.8; }
         .tab-btn.active { opacity: 1; border-color: var(--theme-dim); background: rgba(255,255,255,0.05); font-weight: bold; }
         .tab-content { display: none; flex-direction: column; width: 100%; }
@@ -99,9 +104,9 @@
         .special-item { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; min-width: 0; }
         .special-box { border: 2px solid var(--theme-dim); width: 100%; aspect-ratio: 1; display: flex; justify-content: center; align-items: center; padding: 2px; border-radius: 2px; }
         .special-box-inner { border: 1px solid var(--theme-dim); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); }
-        .special-box-inner input { width: 100%; font-size: clamp(18px, 5vw, 36px); border: none; font-weight: bold; text-align: center; }
-        .special-label { font-size: clamp(10px, 2.5vw, 15px); text-align: center; display: flex; flex-direction: column; align-items: center; line-height: 1; width: 100%; overflow: hidden;}
-        .special-letter { border: 1px solid var(--theme-color); border-radius: 50%; width: clamp(16px, 4vw, 24px); height: clamp(16px, 4vw, 24px); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 2px; font-size: clamp(12px, 3vw, 18px);}
+        .special-box-inner input { width: 100%; font-size: clamp(20px, 5vw, 36px); border: none; font-weight: bold; text-align: center; }
+        .special-label { font-size: var(--font-size-small); text-align: center; display: flex; flex-direction: column; align-items: center; line-height: 1; width: 100%; overflow: hidden;}
+        .special-letter { border: 1px solid var(--theme-color); border-radius: 50%; width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 2px; font-size: var(--font-size-small);}
         .full-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
 
         .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -113,13 +118,22 @@
         .hp-bar-fill { height: 100%; width: 100%; background: var(--theme-color); box-shadow: var(--theme-glow); transition: width 0.4s ease-out; }
         .cnd-box { border: 1px solid var(--theme-color); padding: 2px 6px; font-size: var(--font-size-small);}
 
-        .vault-boy-container { position: relative; height: 300px; display: flex; justify-content: center; align-items: center; border: 1px dashed var(--theme-dim); margin-bottom: 10px; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); transition: height 0.3s; }
-        .vb-figure { width: 160px; height: auto; opacity: 0.6; position: absolute; color: var(--theme-color); filter: drop-shadow(0 0 5px var(--theme-color)); transition: color 0.3s, filter 0.3s; }
-        .hit-loc { position: absolute; display: flex; flex-direction: column; align-items: center; font-size: var(--font-size-small); transition: all 0.3s; z-index: 10;}
-        .hit-loc input { width: 40px; font-size: var(--font-size-base); margin-top: 2px; background: rgba(0,0,0,0.7); border-radius: 4px; border: 1px solid var(--theme-dim);}
-        .hit-loc.head { top: 10px; } .hit-loc.l-arm { left: 10px; top: 100px; } .hit-loc.r-arm { right: 10px; top: 100px; } .hit-loc.torso { top: 130px; } .hit-loc.l-leg { left: 35px; bottom: 15px; } .hit-loc.r-leg { right: 35px; bottom: 15px; }
-        .combat-stats { display: flex; justify-content: space-around; font-size: var(--font-size-small); text-align: center; border: 1px solid var(--theme-dim); padding: 8px;}
-        .combat-stats input { font-size: var(--font-size-base); width: 45px;}
+        .vault-boy-container { position: relative; width: 100%; max-width: 320px; height: 320px; margin: 0 auto 10px auto; border: 1px dashed var(--theme-dim); background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); }
+        .vb-figure { width: 180px; height: auto; opacity: 0.6; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--theme-color); filter: drop-shadow(0 0 5px var(--theme-color)); transition: color 0.3s, filter 0.3s; }
+        .hit-loc { position: absolute; display: flex; flex-direction: column; align-items: center; font-size: clamp(12px, 2.5vw, 14px) !important; z-index: 10; text-align: center; white-space: nowrap;}
+        .hit-loc input { width: 35px; font-size: 16px !important; margin-top: 2px; background: rgba(0,0,0,0.8); border-radius: 4px; border: 1px solid var(--theme-dim);}
+        
+        .hit-loc.head { top: 5%; left: 50%; transform: translateX(-50%); } 
+        .hit-loc.l-arm { top: 40%; left: 5%; } 
+        .hit-loc.r-arm { top: 40%; right: 5%; } 
+        .hit-loc.torso { top: 52%; left: 50%; transform: translate(-50%, -50%); } 
+        .hit-loc.l-leg { bottom: 5%; left: 15%; } 
+        .hit-loc.r-leg { bottom: 5%; right: 15%; }
+        
+        .combat-stats { display: flex; flex-wrap: wrap; justify-content: space-around; font-size: var(--font-size-small); text-align: center; border: 1px solid var(--theme-dim); padding: 8px; gap: 5px;}
+        .combat-stats > div { flex: 1 1 30%; min-width: 60px; }
+        .combat-stats input { font-size: var(--font-size-base); width: 45px; text-align: center; border:none;}
+        .combat-stats span.auto-stat { font-size: var(--font-size-base); font-weight: bold; text-shadow: 0 0 5px var(--theme-color); display: block; margin-top: 2px;}
 
         .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; font-size: var(--font-size-small); margin-top: 5px; }
         .skill-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--theme-dim); padding-bottom: 2px;}
@@ -129,24 +143,76 @@
         .skill-tn { color: var(--theme-color); width: 40px; text-align: right; font-weight: normal; font-size: var(--font-size-base); text-shadow: 0 0 2px var(--theme-color); }
         .attr-hint { font-size: 0.8em; opacity: 0.6; margin-left: 2px; }
 
+        /* --- ШТОРКА (DRAWER) И ЕЕ АДАПТИВНОСТЬ --- */
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 2000; display: none; opacity: 0; transition: opacity 0.3s; }
+        .drawer-overlay.active { display: block; opacity: 1; }
+        .bottom-drawer {
+            position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 100%; max-width: 900px; height: 85vh; 
+            background: var(--bg-color); border-top: 2px solid var(--theme-color); border-left: 2px solid var(--theme-color); border-right: 2px solid var(--theme-color); border-top-left-radius: 8px; border-top-right-radius: 8px;
+            z-index: 2001; transition: bottom 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); padding: 20px; display: flex; flex-direction: column; gap: 10px;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.9); font-family: var(--font); color: var(--theme-color); text-transform: uppercase; text-shadow: var(--theme-glow);
+        }
+        .bottom-drawer.active { bottom: 0; }
+        .drawer-list { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-bottom: 20px;}
+        .drawer-item { border: 1px dashed var(--theme-dim); padding: 10px; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.5); }
+        .drawer-item:hover { background: rgba(33, 255, 33, 0.1); border-color: var(--theme-color);}
+        .drawer-item-title { font-weight: bold; font-size: var(--font-size-base); margin-bottom: 5px; color: #fff; text-shadow: 0 0 4px #fff;}
+        .drawer-item-desc { font-size: var(--font-size-small); opacity: 0.8; text-transform: none;}
+        .drawer-item-req { font-size: 14px; color: #ffeb3b; text-shadow: none; margin-bottom: 5px;}
+        
+        /* ИСПРАВЛЕННЫЙ КОНТЕЙНЕР ТАБОВ ИНВЕНТАРЯ */
+        .inv-tabs { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin-top: 10px; 
+            padding-bottom: 10px;
+        }
+        .inv-tab-btn { 
+            flex: 1 1 auto; 
+            min-width: 110px; 
+            background: transparent; 
+            color: var(--theme-color); 
+            border: 2px solid var(--theme-dim); 
+            padding: 8px 12px; 
+            font-family: var(--font); 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-size: var(--font-size-base); 
+            text-shadow: var(--theme-glow);
+            transition: 0.2s;
+        }
+        .inv-tab-btn:hover { 
+            background: rgba(33, 255, 33, 0.1); 
+            border-color: var(--theme-color); 
+        }
+        .inv-tab-btn.active { 
+            background: rgba(33, 255, 33, 0.2); 
+            border-color: var(--theme-color); 
+            font-weight: bold; 
+            color: #fff;
+        }
+
         @media (max-width: 768px) {
             body { padding: 15px 10px; padding-top: 50px; }
             .container { padding: 0; filter: none; transform: none;}
             .burger-btn { top: 10px; right: 10px; font-size: 20px; padding: 2px 8px;}
             .main-grid { grid-template-columns: 1fr; }
             .skills-grid { grid-template-columns: 1fr; gap: 8px; }
-            .vault-boy-container { height: 210px; margin-top: 10px; margin-bottom: 5px;}
-            .vb-figure { width: 110px; }
-            .hit-loc.head { top: 5px; } .hit-loc.l-arm { left: 5px; top: 75px; } .hit-loc.r-arm { right: 5px; top: 75px; } .hit-loc.torso { top: 105px; } .hit-loc.l-leg { left: 25px; bottom: 5px; } .hit-loc.r-leg { right: 25px; bottom: 5px; }
+            
+            .vault-boy-container { height: 260px; max-width: 260px; margin-top: 10px; margin-bottom: 5px;}
+            .vb-figure { width: 140px; }
             .hit-loc input { width: 35px; margin-top: 0;}
+            
             .crt-bezel { border-radius: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,1); }
+            .bottom-drawer { height: 90vh; padding: 15px 10px; border-radius: 0; border-left: none; border-right: none;}
         }
 
         @media print {
             @page { margin: 1cm; }
-            body { background-color: #fff !important; color: #000 !important; text-shadow: none !important; padding: 0; font-size: 12px; width: 100%;}
+            body { background-color: #fff !important; color: #000 !important; text-shadow: none !important; padding: 0; font-size: 14px; width: 100%;}
             * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
-            .crt-glass, .crt-bezel, .scanline-roll, .burger-btn, .side-menu, #svg-filters { display: none !important; }
+            .crt-glass, .crt-bezel, .scanline-roll, .burger-btn, .side-menu, #svg-filters, .drawer-overlay, .bottom-drawer { display: none !important; }
             .container { filter: none !important; transform: none !important; }
             .local-glitch-active { animation: none !important; filter: none !important; background: transparent !important; transform: none !important;}
             :root { --theme-color: #000; --theme-dim: #aaa; --theme-glow: none; --bg-color: #fff; }
@@ -155,11 +221,11 @@
             .hit-loc input { border-bottom: 1px solid #000; background: transparent; }
             .skill-tn, .skill-val { text-shadow: none; font-weight: bold; }
             .vb-figure { color: #888 !important; filter: none !important; opacity: 0.3; }
-            .tabs-header { display: none !important; }
+            .tabs-header, .add-btn-row { display: none !important; }
             .tab-content { display: block !important; margin-bottom: 20px; }
-            #tab-perks::before { content: "СПОСОБНОСТИ (PERKS)"; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
-            #tab-inv::before { content: "ИНВЕНТАРЬ (INV)"; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
-            #tab-notes::before { content: "ЗАМЕТКИ"; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
+            #tab-perks::before { content: "СПОСОБНОСТИ (PERKS)"; font-weight: bold; font-size: 16px; margin-bottom: 5px; display: block; }
+            #tab-inv::before { content: "ИНВЕНТАРЬ (INV)"; font-weight: bold; font-size: 16px; margin-bottom: 5px; display: block; }
+            #tab-notes::before { content: "ЗАМЕТКИ"; font-weight: bold; font-size: 16px; margin-bottom: 5px; display: block; }
             textarea.auto-expand { border-color: #000 !important; min-height: 50px; }
             select.pb-select { border-color: #000 !important; color: #000 !important; }
         }
@@ -180,23 +246,42 @@
 <div class="crt-glass"></div>
 <div class="scanline-roll"></div>
 
+<!-- ШТОРКА (DRAWER) -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="bottom-drawer" id="bottom-drawer">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--theme-dim); padding-bottom: 10px;">
+        <div id="drawer-title" style="font-size: var(--font-size-large); font-weight: bold; text-shadow: 0 0 10px var(--theme-color);">БАЗА ДАННЫХ</div>
+        <button class="pb-btn" style="width: auto; padding: 2px 12px; font-size: var(--font-size-large);" onclick="closeDrawer()">X</button>
+    </div>
+    
+    <div id="inv-tabs-container" class="inv-tabs" style="display: none;">
+        <button class="inv-tab-btn active" id="inv-tab-all" onclick="setInvCategory('all')">ВСЕ</button>
+        <button class="inv-tab-btn" id="inv-tab-weapon" onclick="setInvCategory('weapon')">ОРУЖИЕ</button>
+        <button class="inv-tab-btn" id="inv-tab-armor" onclick="setInvCategory('armor')">БРОНЯ</button>
+        <button class="inv-tab-btn" id="inv-tab-ammo" onclick="setInvCategory('ammo')">ПАТРОНЫ</button>
+        <button class="inv-tab-btn" id="inv-tab-consumable" onclick="setInvCategory('consumable')">ПРЕПАРАТЫ</button>
+        <button class="inv-tab-btn" id="inv-tab-misc" onclick="setInvCategory('misc')">ПРОЧЕЕ</button>
+    </div>
+
+    <input type="text" id="drawer-search" placeholder="ПОИСК..." onkeyup="filterDrawer()" style="margin-top: 10px; font-size: var(--font-size-base); padding: 5px;">
+    <div id="drawer-status" style="font-size: 14px; text-align: center; color: yellow; margin-top: 5px;"></div>
+    
+    <div class="drawer-list" id="drawer-list"></div>
+</div>
+
 <div class="burger-btn" onclick="toggleMenu()">☰</div>
 
 <div class="side-menu" id="side-menu">
     <div class="menu-title">СИСТЕМА ТМА</div>
     
     <div style="margin-top: 10px; text-align: center; font-size: var(--font-size-small);">АКТИВНЫЙ ПРОФИЛЬ</div>
-    <select id="save-slot" class="pb-select" style="margin-bottom: 15px;">
-        <option value="1">ПРОФИЛЬ 1</option>
-        <option value="2">ПРОФИЛЬ 2</option>
-        <option value="3">ПРОФИЛЬ 3</option>
-        <option value="4">ПРОФИЛЬ 4</option>
-        <option value="5">ПРОФИЛЬ 5</option>
+    <select id="save-slot" class="pb-select" style="margin-bottom: 15px;" onchange="loadFromCloud()">
+        <!-- Заполняется из JS -->
     </select>
 
-    <button class="pb-btn" onclick="saveToCloud()" id="btn-save">СОХРАНИТЬ В ОБЛАКО</button>
+    <button class="pb-btn" onclick="saveWithConfirm()" id="btn-save">СОХРАНИТЬ В ОБЛАКО</button>
     <button class="pb-btn" onclick="loadFromCloud()" id="btn-load">ЗАГРУЗИТЬ ИЗ ОБЛАКА</button>
-    <div id="cloud-status" style="font-size: 14px; text-align: center; color: yellow; min-height: 20px;"></div>
+    <div id="cloud-status" style="font-size: 14px; text-align: center; color: yellow; min-height: 20px; margin-top: 5px;"></div>
     
     <div style="margin-top: 20px; text-align: center; font-size: var(--font-size-base);">ЦВЕТОВОЙ РЕЖИМ</div>
     <div class="theme-selector">
@@ -209,29 +294,39 @@
 <div class="container" id="main-container">
     
     <div class="header">
-        <div class="header-item glitch-target"><span>УРОВЕНЬ</span><input type="number" id="char-lvl" value="1" style="width: 50px;"></div>
+        <div class="header-item glitch-target"><span>УРОВЕНЬ</span><input type="number" id="char-lvl" value="1" style="width: 50px;" onchange="calcSecondary()"></div>
         <div class="logo">≡( d20 )≡</div>
         <div class="header-item glitch-target"><span>ОПЫТ</span><input type="text" id="char-xp" style="width: 90px; text-align: right;"></div>
     </div>
 
     <div class="name-row">
         <div><span>ИМЯ:</span><input type="text" id="char-name" placeholder="ВВЕДИТЕ ИМЯ..."></div>
-        <div><span>ПРОИСХОЖДЕНИЕ:</span><input type="text" id="char-origin"></div>
+        <div>
+            <span>ПРОИСХОЖДЕНИЕ:</span>
+            <select id="char-origin" class="pb-select" style="border: none; border-bottom: 1px dashed var(--theme-dim); flex-grow: 1;" onchange="enforceLimits()">
+                <option value="Выживший">ВЫЖИВШИЙ</option>
+                <option value="Братство Стали">БРАТСТВО СТАЛИ</option>
+                <option value="Гуль">ГУЛЬ</option>
+                <option value="Супермутант">СУПЕРМУТАНТ</option>
+                <option value="Мистер Помощник">МИСТЕР ПОМОЩНИК</option>
+                <option value="Выходец из Убежища">ВЫХОДЕЦ ИЗ УБЕЖИЩА</option>
+            </select>
+        </div>
     </div>
 
     <div class="special-container">
-        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-str" value="5" min="1" max="10"></div></div><div class="special-label"><span class="special-letter">S</span><span class="full-text">СИЛА</span></div></div>
-        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-per" value="5" min="1" max="10"></div></div><div class="special-label"><span class="special-letter">P</span><span class="full-text">ВОСПР.</span></div></div>
-        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-end" value="5" min="1" max="10"></div></div><div class="special-label"><span class="special-letter">E</span><span class="full-text">ВЫНОСЛ.</span></div></div>
-        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-cha" value="5" min="1" max="10"></div></div><div class="special-label"><span class="special-letter">C</span><span class="full-text">ХАРИЗМА</span></div></div>
-        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-int" value="5" min="1" max="10"></div></div><div class="special-label"><span class="special-letter">I</span><span class="full-text">ИНТЕЛЛ.</span></div></div>
-        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-agi" value="5" min="1" max="10"></div></div><div class="special-label"><span class="special-letter">A</span><span class="full-text">ЛОВКОСТЬ</span></div></div>
-        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-luc" value="5" min="1" max="10"></div></div><div class="special-label"><span class="special-letter">L</span><span class="full-text">УДАЧА</span></div></div>
+        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-str" value="5" min="1" max="10" onchange="enforceLimits()"></div></div><div class="special-label"><span class="special-letter">S</span><span class="full-text">СИЛА</span></div></div>
+        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-per" value="5" min="1" max="10" onchange="enforceLimits()"></div></div><div class="special-label"><span class="special-letter">P</span><span class="full-text">ВОСПР.</span></div></div>
+        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-end" value="5" min="1" max="10" onchange="enforceLimits()"></div></div><div class="special-label"><span class="special-letter">E</span><span class="full-text">ВЫНОСЛ.</span></div></div>
+        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-cha" value="5" min="1" max="10" onchange="enforceLimits()"></div></div><div class="special-label"><span class="special-letter">C</span><span class="full-text">ХАРИЗМА</span></div></div>
+        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-int" value="5" min="1" max="10" onchange="enforceLimits()"></div></div><div class="special-label"><span class="special-letter">I</span><span class="full-text">ИНТЕЛЛ.</span></div></div>
+        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-agi" value="5" min="1" max="10" onchange="enforceLimits()"></div></div><div class="special-label"><span class="special-letter">A</span><span class="full-text">ЛОВКОСТЬ</span></div></div>
+        <div class="special-item glitch-target"><div class="special-box"><div class="special-box-inner"><input type="number" id="attr-luc" value="5" min="1" max="10" onchange="enforceLimits()"></div></div><div class="special-label"><span class="special-letter">L</span><span class="full-text">УДАЧА</span></div></div>
     </div>
 
     <div class="main-grid">
         <div>
-            <div class="hp-section glitch-target">HP <input type="number" id="hp-cur" value="10"> / <input type="number" id="hp-max" value="10"></div>
+            <div class="hp-section glitch-target">HP <input type="number" id="hp-cur" value="10"> / <input type="number" id="hp-max" value="10" readonly style="color: grey;"></div>
             <div class="hp-bar-container"><div class="hp-bar-wrapper"><div class="hp-bar-fill" id="hp-fill-ui"></div></div><div class="cnd-box">CND</div></div>
 
             <div class="vault-boy-container framed-box glitch-target">
@@ -284,9 +379,11 @@
             </div>
 
             <div class="combat-stats framed-box glitch-target">
-                <div>ЗАЩИТА<br><input type="number" id="stat-def" value="1"></div>
-                <div>ИНИЦИАТИВА<br><input type="number" id="stat-init" value="10"></div>
-                <div>МАКС. ОД<br><input type="number" id="stat-ap" value="6" readonly style="color: grey; border: none;"></div>
+                <div>ЗАЩИТА<br><input type="number" id="stat-def" value="1" readonly style="color: grey;"></div>
+                <div>ИНИЦИАТИВА<br><input type="number" id="stat-init" value="10" readonly style="color: grey;"></div>
+                <div>МАКС. ОД<br><input type="number" id="stat-ap" value="6" readonly style="color: grey;"></div>
+                <div>УРОН ББ<br><span id="stat-melee" class="auto-stat">+0 БК</span></div>
+                <div>ВЕС<br><span id="stat-carry" class="auto-stat">200 ф.</span></div>
             </div>
         </div>
 
@@ -305,10 +402,16 @@
         </div>
         
         <div class="tab-content active" id="tab-perks">
+            <div class="add-btn-row" style="margin-bottom: 10px; text-align: right;">
+                <button class="pb-btn" style="width: auto; padding: 4px 12px; font-size: var(--font-size-small);" onclick="openDrawer('perks')">[ ДОБАВИТЬ ПЕРК ]</button>
+            </div>
             <textarea id="text-perks" class="auto-expand" placeholder="ОПИШИТЕ ВАШИ ПЕРКИ..."></textarea>
         </div>
         
         <div class="tab-content" id="tab-inv">
+            <div class="add-btn-row" style="margin-bottom: 10px; text-align: right;">
+                <button class="pb-btn" style="width: auto; padding: 4px 12px; font-size: var(--font-size-small);" onclick="openDrawer('inv')">[ ДОБАВИТЬ ПРЕДМЕТ ]</button>
+            </div>
             <textarea id="text-inv" class="auto-expand" placeholder="ОРУЖИЕ, БРОНЯ, КРЫШКИ..."></textarea>
         </div>
 
@@ -320,13 +423,43 @@
 </div>
 
 <script>
-    // --- ИНИЦИАЛИЗАЦИЯ ТЕЛЕГРАМ ---
+    // --- ИНИЦИАЛИЗАЦИЯ ТЕЛЕГРАМ И ПРОФИЛЕЙ ---
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    let profileNames = { "1": "ПРОФИЛЬ 1", "2": "ПРОФИЛЬ 2", "3": "ПРОФИЛЬ 3" };
+
+    function initProfiles(callback) {
+        if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
+            tg.CloudStorage.getItem('profile_names', (err, val) => {
+                if (val) { profileNames = JSON.parse(val); }
+                updateProfileSelect();
+                if(callback) callback();
+            });
+        } else {
+            const val = localStorage.getItem('profile_names');
+            if (val) { profileNames = JSON.parse(val); }
+            updateProfileSelect();
+            if(callback) callback();
+        }
+    }
+
+    function updateProfileSelect() {
+        const sel = document.getElementById('save-slot');
+        const currentVal = sel.value;
+        sel.innerHTML = '';
+        for(let i=1; i<=3; i++) {
+            let opt = document.createElement('option');
+            opt.value = i;
+            opt.text = profileNames[i] !== `ПРОФИЛЬ ${i}` ? `[${i}] ${profileNames[i]}` : `ПРОФИЛЬ ${i}`;
+            if(i == currentVal) opt.selected = true;
+            sel.appendChild(opt);
+        }
+    }
+
     // --- МЕНЮ ---
     function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); }
-
+    
     document.addEventListener('click', function(event) {
         const menu = document.getElementById('side-menu');
         const btn = document.querySelector('.burger-btn');
@@ -335,14 +468,429 @@
         }
     });
 
+    function showStatus(msg, isError = false) {
+        const drawerStatus = document.getElementById('drawer-status');
+        const cloudStatus = document.getElementById('cloud-status');
+        if(drawerStatus) { drawerStatus.style.color = isError ? 'red' : 'yellow'; drawerStatus.textContent = msg; setTimeout(() => drawerStatus.textContent = '', 3000); }
+        if(cloudStatus) { cloudStatus.style.color = isError ? 'red' : 'yellow'; cloudStatus.textContent = msg; setTimeout(() => cloudStatus.textContent = '', 3000); }
+    }
+
+    // --- БАЗЫ ДАННЫХ ---
+    const dbPerks = [
+        { name: "Живчик", desc: "Доп. Основное действие (за 2 ОД) не повышает сложность проверки.", req: () => true, reqStr: "Нет" },
+        { name: "Адамантиевый скелет", desc: "Урон для получения критической травмы увеличен на 1 за каждый ранг.", req: (s) => s.end >= 7, reqStr: "ВЫН 7" },
+        { name: "Выброс адреналина", desc: "Если здоровье не полное, СИЛ=10 для проверок ББ.", req: (s) => s.str >= 7, reqStr: "СИЛ 7" },
+        { name: "Друг животных", desc: "Животные могут отказаться атаковать или будут вас защищать (на 2 ранге).", req: (s) => s.cha >= 6, reqStr: "ХАР 6" },
+        { name: "Аква-мальчик / Аква-девочка", desc: "Нет рад. урона в воде, дышите под водой. На 2 ранге + скрытность под водой.", req: (s) => s.end >= 5, reqStr: "ВЫН 5" },
+        { name: "Бронник", desc: "Вы можете устанавливать модификации брони.", req: (s) => s.str >= 5 && s.int >= 6, reqStr: "СИЛ 5, ИНТ 6" },
+        { name: "Наблюдательность", desc: "Прицеливание (Малое действие) дает атаке Проникающий 1.", req: (s) => s.per >= 7, reqStr: "ВСП 7" },
+        { name: "Варвар", desc: "Увеличивает Физ.СУ (до +3) в зависимости от вашей СИЛ (без Силовой брони).", req: (s) => s.str >= 7 && s.origin !== 'Мистер Помощник' && s.lvl >= 4, reqStr: "СИЛ 7, Ур. 4" },
+        { name: "Хрясь!", desc: "Атака прикладом/рукоятью получает свойство Жестокая.", req: (s) => s.str >= 6, reqStr: "СИЛ 6" },
+        { name: "Больше критов!", desc: "Тратьте 1 Удачу при попадании, чтобы нанести Крит (травму).", req: (s) => s.lck >= 9, reqStr: "УДЧ 9" },
+        { name: "Высшая лига", desc: "Двуручное оружие ближнего боя получает свойство Жестокий.", req: (s) => s.str >= 8, reqStr: "СИЛ 8" },
+        { name: "Черная вдова / Женоубийца", desc: "Переброс 1d20 проверок ХАР и +1 БК урона против выбранного пола.", req: (s) => s.cha >= 6, reqStr: "ХАР 6" },
+        { name: "Кузнец", desc: "Вы можете устанавливать модификации оружия ближнего боя.", req: (s) => s.str >= 6 && s.lvl >= 2, reqStr: "СИЛ 6, Ур. 2" },
+        { name: "Блиц", desc: "Переброс 1d20 при сближении и атаке ББ в один ход.", req: (s) => s.agi >= 9, reqStr: "ЛВК 9" },
+        { name: "Кровавая баня", desc: "При крите +1 доп. урон в случайную область (если выпало 5-6 на БК).", req: (s) => s.lck >= 6, reqStr: "УДЧ 6" },
+        { name: "Это можно!", desc: "+1 случайная еда при поиске ресурсов, не тратя ОД.", req: (s) => s.lck >= 5, reqStr: "УДЧ 5" },
+        { name: "Коллекционер крышек", desc: "Вы можете увеличивать/уменьшать цены на 10% при торговле.", req: (s) => s.cha >= 5, reqStr: "ХАР 5" },
+        { name: "Осторожная натура", desc: "При покупке d20 за ОД, можно перебросить 1d20 в этой проверке.", req: (s) => s.per >= 7, reqStr: "ВСП 7" },
+        { name: "Безрассудная натура", desc: "При покупке d20 (за счет ОД Мастера), можно перебросить 1d20.", req: (s) => s.lck >= 7, reqStr: "УДЧ 7" },
+        { name: "Центр массы", desc: "Дальняя атака: выбор области попадания без штрафов, переброс 1d20.", req: (s) => s.agi >= 7, reqStr: "ЛВК 7" },
+        { name: "Чистая жизнь", desc: "Снижен риск зависимости от химикатов (или полный иммунитет на 2 ранге).", req: (s) => s.end >= 7, reqStr: "ВЫН 7" },
+        { name: "Химик", desc: "Свои препараты действуют в 2 раза дольше. Доступ к рецептам.", req: (s) => s.int >= 7, reqStr: "ИНТ 7" },
+        { name: "Коммандо", desc: "+1 БК урона для автоматического оружия за каждый ранг.", req: (s) => s.agi >= 8 && s.lvl >= 2, reqStr: "ЛВК 8, Ур. 2" },
+        { name: "Понимание", desc: "Переброс БК для повторного получения бонуса от прочитанного журнала.", req: (s) => s.int >= 6, reqStr: "ИНТ 6" },
+        { name: "Массированный огонь", desc: "Переброс до 3 БК урона при трате патронов для увеличения урона.", req: (s) => s.per >= 8 && s.agi >= 6, reqStr: "ВСП 8, ЛВК 6" },
+        { name: "Эксперт-подрывник", desc: "Взрывчатка получает Жестокий. Доступ к рецептам взрывчатки.", req: (s) => s.per >= 6 && s.lck >= 6, reqStr: "ВСП 6, УДЧ 6" },
+        { name: "Доджер", desc: "Основное действие Защита снижает сложность на 1, или стоит 1 ОД.", req: (s) => s.agi >= 6 && s.lvl >= 4, reqStr: "ЛВК 6, Ур. 4" },
+        { name: "Псина", desc: "Союзный НИП собака. Снижает сложность проверок ВСП на 1.", req: (s) => s.cha >= 5, reqStr: "ХАР 5" },
+        { name: "Энтомолог", desc: "Атаки по насекомым получают Проникающий 1.", req: (s) => s.int >= 7, reqStr: "ИНТ 7" },
+        { name: "Быстрый метаболизм", desc: "+1 ОЗ при любом исцелении за каждый ранг.", req: (s) => s.end >= 6 && s.origin !== 'Мистер Помощник', reqStr: "ВЫН 6" },
+        { name: "Быстрое исцеление", desc: "Доп. 1d20 бесплатно при проверке ВЫН+Выживание (Отдых).", req: (s) => s.end >= 6 && s.origin !== 'Мистер Помощник', reqStr: "ВЫН 6" },
+        { name: "Изящность", desc: "1 раз за бой переброс всех БК урона без траты Удачи.", req: (s) => s.agi >= 9, reqStr: "ЛВК 9" },
+        { name: "Кладоискатель", desc: "Находите больше крышек при поиске ресурсов (+3/6/10 БК).", req: (s) => s.lck >= 5 && s.lvl >= 2, reqStr: "УДЧ 5, Ур. 2" },
+        { name: "Призрак", desc: "Бесплатный доп. d20 на Скрытность в темноте.", req: (s) => s.per >= 5 && s.agi >= 6, reqStr: "ВСП 5, ЛВК 6" },
+        { name: "Смерть на взлете", desc: "Убийство врага дает шанс восстановить +2 ОД в пул (при 5-6 на БК).", req: (s) => s.lck >= 8, reqStr: "УДЧ 8" },
+        { name: "Ган-ката", desc: "Тратьте ОД и патроны для поражения доп. целей в Ближней дистанции.", req: (s) => s.agi >= 10, reqStr: "ЛВК 10" },
+        { name: "Фанатик оружия", desc: "Позволяет модифицировать стрелковое и тяжелое оружие.", req: (s) => s.int >= 6 && s.lvl >= 2, reqStr: "ИНТ 6, Ур. 2" },
+        { name: "Дуэлист", desc: "+1 БК урона для одноручного стрелкового оружия за каждый ранг.", req: (s) => s.agi >= 7 && s.lvl >= 2, reqStr: "ЛВК 7, Ур. 2" },
+        { name: "Хакер", desc: "Сложность взлома компьютеров снижена на 1.", req: (s) => s.int >= 8, reqStr: "ИНТ 8" },
+        { name: "Целитель", desc: "+1 исцеляемое ОЗ при Первой помощи за каждый ранг.", req: (s) => s.int >= 7, reqStr: "ИНТ 7" },
+        { name: "Эй, лови!", desc: "Трата 1 ОД увеличивает дальность броска метательного оружия на 1 шаг.", req: (s) => s.str >= 8, reqStr: "СИЛ 8" },
+        { name: "Охотник", desc: "Атаки по мутировавшим животным получают Жестокий.", req: (s) => s.end >= 6, reqStr: "ВЫН 6" },
+        { name: "Лазутчик", desc: "Переброс 1d20 при взломе замков.", req: (s) => s.per >= 8, reqStr: "ВСП 8" },
+        { name: "Прирожденный лидер", desc: "Максимальное количество ОД группы увеличивается на 1.", req: (s) => s.cha >= 8, reqStr: "ХАР 8" },
+        { name: "Интенсивное обучение", desc: "Увеличьте любой Атрибут S.P.E.C.I.A.L. на 1 (Макс 10).", req: (s) => s.lvl >= 2, reqStr: "Ур. 2" },
+        { name: "Железный кулак", desc: "+1 БК урона для безоружных атак (на 2 ранге + Жестокий).", req: (s) => s.str >= 6, reqStr: "СИЛ 6" },
+        { name: "Торговец из Джанктауна", desc: "Проверки Бартера (торг) легче на 1.", req: (s) => s.cha >= 8, reqStr: "ХАР 8" },
+        { name: "Очумелые ручки", desc: "Временный ремонт предметов без траты материалов (поломка при 19-20).", req: () => true, reqStr: "Нет" },
+        { name: "Лазеров начальник", desc: "+1 БК урона для энергооружия дальнего боя за ранг.", req: (s) => s.per >= 8 && s.lvl >= 2, reqStr: "ВСП 8, Ур. 2" },
+        { name: "Свинцовое брюхо", desc: "Снижает или убирает рад. урон от облученной еды и питья.", req: (s) => s.end >= 6, reqStr: "ВЫН 6" },
+        { name: "Фонтан жизни", desc: "Увеличивает макс. ОЗ на значение ВЫН.", req: (s) => s.lvl >= 5, reqStr: "Ур. 5" },
+        { name: "Легкий шаг", desc: "Позволяет игнорировать ловушки и мины (переброс 1d20 на уклонение).", req: () => true, reqStr: "Нет" },
+        { name: "Мастер вор", desc: "Обнаружить вашу кражу или взлом сложнее на 1 для противника.", req: (s) => s.per >= 8 && s.agi >= 9, reqStr: "ВСП 8, ЛВК 9" },
+        { name: "Медик", desc: "Переброс 1d20 при лечении травмы Первой помощью.", req: (s) => s.int >= 8, reqStr: "ИНТ 8" },
+        { name: "Распад", desc: "Враги, убитые энергооружием, взрываются, нанося урон в Ближней зоне.", req: (s) => s.per >= 10, reqStr: "ВСП 10" },
+        { name: "Песочный человек", desc: "+2 БК скрытной атаки с глушителем или Тихим оружием (Без сил. брони).", req: (s) => s.agi >= 9, reqStr: "ЛВК 9" },
+        { name: "Бегущая мишень", desc: "+1 Защита до следующего хода при выполнении Спринта.", req: (s) => s.agi >= 6, reqStr: "ЛВК 6" },
+        { name: "Таинственный незнакомец", desc: "За 1 Удачи появляется союзник и совершает мощную атаку.", req: (s) => s.lck >= 7, reqStr: "УДЧ 7" },
+        { name: "Бешенство ботаника", desc: "При ОЗ < 25%, добавляет +Физ/Энерг СУ и +БК урона.", req: (s) => s.int >= 8 && s.lvl >= 2, reqStr: "ИНТ 8, Ур. 2" },
+        { name: "Ночное существо", desc: "Штрафы от темноты снижены на 1.", req: (s) => s.per >= 7, reqStr: "ВСП 7" },
+        { name: "Ниндзя", desc: "Скрытная атака ББ или Без оружия наносит +2 БК урона (Без сил. брони).", req: (s) => s.agi >= 8, reqStr: "ЛВК 8" },
+        { name: "Физик-ядерщик", desc: "Доп. Рад. урон при 5-6 на БК. Ядерные блоки имеют +3 заряда.", req: (s) => s.int >= 9, reqStr: "ИНТ 9" },
+        { name: "Поезд боли", desc: "Атака с разбега сбивает с ног (если в Силовой броне или Супермутант).", req: (s) => s.str >= 9 && s.end >= 7, reqStr: "СИЛ 9, ВЫН 7" },
+        { name: "Парализующая ладонь", desc: "Безоружная атака в конкретную область получает Оглушающий.", req: (s) => s.str >= 8, reqStr: "СИЛ 8" },
+        { name: "Тусовщик / Тусовщица", desc: "Алкоголь лечит +2 ОЗ, нет зависимости от алкоголя.", req: (s) => s.end >= 6 && s.cha >= 7, reqStr: "ВЫН 6, ХАР 7" },
+        { name: "Следопыт", desc: "Успешная проверка ВСП+Выживание сокращает время в пути вдвое.", req: (s) => s.per >= 6 && s.end >= 6, reqStr: "ВСП 6, ВЫН 6" },
+        { name: "Фарма фермер", desc: "Находите доп. препараты при поиске ресурсов.", req: (s) => s.lck >= 6, reqStr: "УДЧ 6" },
+        { name: "Карманник", desc: "Игнорирование осложнений или переброс 1d20 при карманной краже.", req: (s) => s.per >= 8 && s.agi >= 8, reqStr: "ВСП 8, ЛВК 8" },
+        { name: "Проникающий удар", desc: "Холодное и безоружное оружие получает Проникающий 1.", req: (s) => s.str >= 7, reqStr: "СИЛ 7" },
+        { name: "Пироман", desc: "+1 БК урона от огня за каждый ранг.", req: (s) => s.end >= 6 && s.lvl >= 2, reqStr: "ВЫН 6, Ур. 2" },
+        { name: "Быстрая реакция", desc: "Достать одно оружие/предмет в ход можно не тратя Малое действие.", req: (s) => s.agi >= 6, reqStr: "ЛВК 6" },
+        { name: "Ловкость рук", desc: "За 2 ОД повышает скорострельность для текущей атаки на +2.", req: (s) => s.agi >= 8, reqStr: "ЛВК 8" },
+        { name: "Непробиваемость", desc: "+1 Физ.СУ для всех областей попадания за ранг.", req: (s) => s.end >= 6 && s.lck >= 6, reqStr: "ВЫН 6, УДЧ 6" },
+        { name: "Рад-сопротивление", desc: "+1 Рад.СУ для всех областей попадания за ранг.", req: (s) => s.end >= 8, reqStr: "ВЫН 8" },
+        { name: "Отражатель", desc: "+1 Энерг.СУ для всех областей попадания за ранг.", req: (s) => s.per >= 6 && s.lck >= 7, reqStr: "ВСП 6, УДЧ 7" },
+        { name: "Змееедство", desc: "Увеличивает Токс.СУ на +2.", req: (s) => s.end >= 7, reqStr: "ВЫН 7" },
+        { name: "Рикошет", desc: "За 1 Удачи выстрел врага (при Осложнении) рикошетит в него самого.", req: (s) => s.lck >= 10 && s.lvl >= 5, reqStr: "УДЧ 10, Ур. 5" },
+        { name: "Эксперт по карабинам", desc: "+1 БК урона двуручных карабинов (кроме тяжелого) за ранг.", req: (s) => s.agi >= 7 && s.lvl >= 2, reqStr: "ЛВК 7, Ур. 2" },
+        { name: "Робототехник", desc: "Позволяет создавать моды и взламывать роботов.", req: (s) => s.int >= 8 && s.lvl >= 2, reqStr: "ИНТ 8, Ур. 2" },
+        { name: "Наука!", desc: "Доступ к модификациям энергооружия и улучшенной броне.", req: (s) => s.int >= 6 && s.lvl >= 2, reqStr: "ИНТ 6, Ур. 2" },
+        { name: "Прохвост", desc: "Игнорируйте 1 осложнение при проверке ХАР+Красноречие.", req: (s) => s.cha >= 7, reqStr: "ХАР 7" },
+        { name: "Сборщик хлама", desc: "Получайте больше редких материалов при разборе хлама.", req: (s) => s.lvl >= 3, reqStr: "Ур. 3" },
+        { name: "Халявщик", desc: "Находите больше патронов при поиске ресурсов.", req: (s) => s.lck >= 6, reqStr: "УДЧ 6" },
+        { name: "Два ствола", desc: "Атаки из дробовиков получают Проникающий 1.", req: (s) => s.str >= 5 && s.agi >= 7, reqStr: "СИЛ 5, ЛВК 7" },
+        { name: "Тренированный", desc: "+1 к двум навыкам или +2 к одному навыку (макс. 6).", req: (s) => s.lvl >= 3, reqStr: "Ур. 3" },
+        { name: "Размер имеет значение", desc: "+1 БК урона для тяжелого оружия за каждый ранг.", req: (s) => s.end >= 7 && s.agi >= 6, reqStr: "ВЫН 7, ЛВК 6" },
+        { name: "Смертельный удар", desc: "За 1 Удачи наносит автоматический крит (травму) в ББ.", req: (s) => s.str >= 8, reqStr: "СИЛ 8" },
+        { name: "Говорун", desc: "Переброс 1d20 при Бартере/Красноречии во встречной проверке.", req: (s) => s.cha >= 6, reqStr: "ХАР 6" },
+        { name: "Снайпер", desc: "Снайперское прицеливание позволяет выбрать область без штрафов.", req: (s) => s.per >= 8 && s.agi >= 6, reqStr: "ВСП 8, ЛВК 6" },
+        { name: "Солнечная батарейка", desc: "На солнце пассивно лечится 1 Рад.урон в час.", req: (s) => s.end >= 7, reqStr: "ВЫН 7" },
+        { name: "Твердая рука", desc: "Прицеливание дает переброс 2d20 для 1 атаки или 1d20 для всех в ходу.", req: (s) => s.str >= 8 && s.agi >= 7, reqStr: "СИЛ 8, ЛВК 7" },
+        { name: "Крепкий хребет", desc: "+25 фунтов к Грузоподъемности за каждый ранг.", req: (s) => s.str >= 5, reqStr: "СИЛ 5" },
+        { name: "Приз!", desc: "Один навык становится Основным, его уровень повышается на 2.", req: (s) => s.lvl >= 5, reqStr: "Ур. 5" },
+        { name: "Страшный человек", desc: "Угрожать легче. За Основное действие можно заставить врага отступить.", req: (s) => s.str >= 6 && s.cha >= 8 && s.lvl >= 3, reqStr: "СИЛ 6, ХАР 8, Ур. 3" }
+    ];
+
+    const dbItems = [
+        // ЛЕГКОЕ ОРУЖИЕ
+        { name: "10-мм пистолет", type: "weapon", desc: "Урон: 4 БК (Физ). Скор: 2. Ближняя дист. Бой вплотную, Надежное." },
+        { name: ".44 Револьвер", type: "weapon", desc: "Урон: 6 БК (Физ). Скор: 1. Ближняя дист. Жестокий, Бой вплотную." },
+        { name: "Сигнальный пистолет", type: "weapon", desc: "Урон: 3 БК (Физ). Скор: 0. Средняя дист. Надежное." },
+        { name: "Боевой карабин", type: "weapon", desc: "Урон: 5 БК (Физ). Скор: 2. Средняя дист. Двуручное." },
+        { name: "Штурмовой карабин", type: "weapon", desc: "Урон: 5 БК (Физ). Скор: 2. Средняя дист. Массированный, Двуручное." },
+        { name: "Охотничий карабин", type: "weapon", desc: "Урон: 6 БК (Физ). Скор: 0. Средняя дист. Проникающий 1, Двуручное." },
+        { name: "Карабин Гаусса", type: "weapon", desc: "Урон: 10 БК (Физ). Скор: 1. Дальняя дист. Проникающий 1, Двуручное." },
+        { name: "Боевой дробовик", type: "weapon", desc: "Урон: 5 БК (Физ). Скор: 2. Ближняя дист. Разброс, Двуручное, Неточное." },
+        { name: "Двуствольный дробовик", type: "weapon", desc: "Урон: 5 БК (Физ). Скор: 0. Ближняя дист. Жестокий, Разброс, Двуручное, Неточное." },
+        { name: "Кустарный пистолет", type: "weapon", desc: "Урон: 3 БК (Физ). Скор: 2. Ближняя дист. Бой вплотную, Ненадежное." },
+        { name: "Кустарный револьвер", type: "weapon", desc: "Урон: 4 БК (Физ). Скор: 1. Ближняя дист. Бой вплотную, Ненадежное." },
+        { name: "Кустарный карабин", type: "weapon", desc: "Урон: 5 БК (Физ). Скор: 0. Ближняя дист. Проникающий 1, Ненадежное." },
+        { name: "Пистолет-пулемет Томпсона", type: "weapon", desc: "Урон: 3 БК (Физ). Скор: 3. Ближняя дист. Массированный, Двуручное, Неточное." },
+        { name: "Гвоздемет", type: "weapon", desc: "Урон: 10 БК (Физ). Скор: 0. Средняя дист. Разрушающий, Двуручное, Ненадежное, Ослабляющее." },
+        { name: "Инъекционный карабин", type: "weapon", desc: "Урон: 3 БК (Физ). Скор: 0. Средняя дист. Двуручное. (Зависит от шприца)" },
+        
+        // ЭНЕРГООРУЖИЕ
+        { name: "Лазерный пистолет", type: "weapon", desc: "Урон: 4 БК (Энерг). Скор: 2. Ближняя дист. Проникающий 1, Бой вплотную." },
+        { name: "Плазменный пистолет", type: "weapon", desc: "Урон: 6 БК (Энерг/Физ). Скор: 1. Ближняя дист. Бой вплотную." },
+        { name: "Лазер Института", type: "weapon", desc: "Урон: 3 БК (Энерг). Скор: 3. Ближняя дист. Массированный, Неточное, Бой вплотную." },
+        { name: "Лазерный мушкет", type: "weapon", desc: "Урон: 5 БК (Энерг). Скор: 0. Средняя дист. Проникающий 1, Двуручное." },
+        { name: "Гамма-пушка", type: "weapon", desc: "Урон: 3 БК (Энерг). Скор: 1. Средняя дист. Проникающий 1, Оглушающий, Неточное, Взрыв." },
+        
+        // ТЯЖЕЛОЕ ОРУЖИЕ
+        { name: "Толстяк", type: "weapon", desc: "Урон: 21 БК (Физ). Скор: 0. Средняя дист. Разрушающий, Рад, Жестокий, Взрыв, Двуручное." },
+        { name: "Миниган", type: "weapon", desc: "Урон: 3 БК (Физ). Скор: 5. Средняя дист. Массированный, Разброс, Гатлинг, Неточное, Двуручное." },
+        { name: "Огнемет", type: "weapon", desc: "Урон: 3 БК (Энерг). Скор: 0. Ближняя дист. Массированный, Продолжительный, Двуручное." },
+        { name: "Гатлинг-лазер", type: "weapon", desc: "Урон: 3 БК (Энерг). Скор: 4. Средняя дист. Массированный, Проникающий 1, Гатлинг, Неточное, Двуручное." },
+        { name: "Тяжелый инсинератор", type: "weapon", desc: "Урон: 5 БК (Энерг). Скор: 6. Средняя дист. Массированный, Продолжительный, Разброс, Ослабляющее, Двуручное." },
+        { name: "Хламотрон", type: "weapon", desc: "Урон: 6 БК (Физ). Скор: 1. Средняя дист. Двуручное." },
+        { name: "Пусковая установка", type: "weapon", desc: "Урон: 11 БК (Физ). Скор: 0. Дальняя дист. Взрыв, Двуручное." },
+        
+        // ОРУЖИЕ БЛИЖНЕГО БОЯ И БЕЗ ОРУЖИЯ
+        { name: "Безоружный удар", type: "weapon", desc: "Урон: 2 БК (Физ). Вплотную." },
+        { name: "Камень", type: "weapon", desc: "Урон: 2 БК (Физ). Метательное (Ближняя). Жестокий." },
+        { name: "Боксерская перчатка", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную. Оглушающий." },
+        { name: "Перчатка когтя смерти", type: "weapon", desc: "Урон: 5 БК (Физ). Вплотную. Проникающий 1." },
+        { name: "Кастет", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную. Скрытное." },
+        { name: "Силовой кастет", type: "weapon", desc: "Урон: 4 БК (Физ). Вплотную. Оглушающий." },
+        { name: "Боевой нож", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную. Проникающий 1." },
+        { name: "Мачете", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную. Проникающий 1." },
+        { name: "Бейсбольная бита", type: "weapon", desc: "Урон: 4 БК (Физ). Вплотную. Двуручное." },
+        { name: "Алюминиевая бита", type: "weapon", desc: "Урон: 5 БК (Физ). Вплотную. Двуручное." },
+        { name: "Суперкувалда", type: "weapon", desc: "Урон: 6 БК (Физ). Вплотную. Разрушающий, Двуручное." },
+        { name: "Кувалда", type: "weapon", desc: "Урон: 5 БК (Физ). Вплотную." },
+        { name: "Меч", type: "weapon", desc: "Урон: 4 БК (Физ). Вплотную. Проникающий 1, Парирование." },
+        { name: "Потрошитель", type: "weapon", desc: "Урон: 4 БК (Физ). Вплотную. Жестокий." },
+        { name: "Шиш-кебаб", type: "weapon", desc: "Урон: 5 БК (Энерг). Вплотную. Проникающий 1, Парирование." },
+        { name: "Выкидной нож", type: "weapon", desc: "Урон: 2 БК (Физ). Вплотную. Проникающий 1, Скрытное." },
+        { name: "Дрын", type: "weapon", desc: "Урон: 4 БК (Физ). Вплотную. Двуручное." },
+        { name: "Свинцовая труба", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную." },
+        { name: "Разводной ключ", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную." },
+        { name: "Монтировка", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную." },
+        { name: "Кий", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную. Двуручное." },
+        { name: "Скалка", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную." },
+        { name: "Телескопическая дубинка", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную." },
+        { name: "Трость", type: "weapon", desc: "Урон: 3 БК (Физ). Вплотную." },
+        { name: "10-мм авто-пистолет (Помощник)", type: "weapon", desc: "Урон: 3 БК (Физ). Скор: 4. Ближняя дист." },
+        { name: "Циркулярный резак (Помощник)", type: "weapon", desc: "Урон: 3 БК (Физ). Проникающий 1. Вплотную." },
+        { name: "Горелка (Помощник)", type: "weapon", desc: "Урон: 3 БК (Энерг). Массированный, Продолжительный. Ближняя дист." },
+        { name: "Лазерный резак (Помощник)", type: "weapon", desc: "Урон: 4 БК (Энерг). Скор: 2. Проникающий 1. Ближняя дист." },
+        { name: "Клещи (Помощник)", type: "weapon", desc: "Урон: 2 БК (Физ). Вплотную." },
+        
+        // БРОНЯ
+        { name: "Кожаная броня (грудь)", type: "armor", desc: "+1 Физ.СУ, +1 Энерг.СУ." },
+        { name: "Кожаный наруч / понож", type: "armor", desc: "+1 Физ.СУ, +1 Энерг.СУ на часть тела." },
+        { name: "Рейдерская броня (грудь)", type: "armor", desc: "+1 Физ.СУ. Грубая защита." },
+        { name: "Рейдерская броня (рука/нога)", type: "armor", desc: "+1 Физ.СУ на часть тела." },
+        { name: "Полевая форма Братства", type: "armor", desc: "+1 Физ.СУ, +1 Энерг.СУ, +1 Рад.СУ" },
+        { name: "Капюшон Братства Стали", type: "armor", desc: "+1 Физ.СУ для головы." },
+        { name: "Костюм скриптора Братства", type: "armor", desc: "+1 Физ.СУ, +2 Энерг.СУ, +1 Рад.СУ" },
+        { name: "Головной убор скриптора", type: "armor", desc: "+1 Энерг.СУ для головы." },
+        { name: "Костюм бродяги", type: "armor", desc: "Одежда. +1 Физ.СУ, +1 Рад.СУ" },
+        { name: "Прочная одежда", type: "armor", desc: "Одежда. +1 Физ.СУ, +1 Энерг.СУ, +1 Рад.СУ" },
+        { name: "Броня охранника «Волт-Тек»", type: "armor", desc: "Броня. +2 Физ.СУ, +2 Энерг.СУ, +2 Рад.СУ" },
+        { name: "Шлем охранника «Волт-Тек»", type: "armor", desc: "+2 Физ.СУ, +2 Энерг.СУ для головы." },
+        { name: "Комбинезон Убежища", type: "armor", desc: "Одежда. +1 Энерг.СУ, +1 Рад.СУ" },
+        { name: "Портупея", type: "armor", desc: "Одежда без защиты." },
+        { name: "Вечерний костюм", type: "armor", desc: "Одежда без защиты." },
+        { name: "Спортивный костюм", type: "armor", desc: "Одежда без защиты." },
+        { name: "Лабораторный халат", type: "armor", desc: "Одежда без защиты." },
+        
+        // ПАТРОНЫ
+        { name: "Патрон калибра .38", type: "ammo", desc: "Боеприпас для легкого кустарного оружия." },
+        { name: "10-мм патрон", type: "ammo", desc: "Боеприпас для 10-мм пистолета." },
+        { name: "Патрон калибра .308", type: "ammo", desc: "Боеприпас для охотничьих винтовок." },
+        { name: "Патрон калибра .45", type: "ammo", desc: "Боеприпас для боевого карабина и Томпсона." },
+        { name: "Патрон калибра .44 Магнум", type: "ammo", desc: "Мощный боеприпас для револьверов." },
+        { name: "Патрон калибра .50", type: "ammo", desc: "Крупнокалиберный боеприпас." },
+        { name: "5.56-мм патрон", type: "ammo", desc: "Боеприпас для штурмовых винтовок." },
+        { name: "5-мм патрон", type: "ammo", desc: "Боеприпас для минигана." },
+        { name: "Патрон дробовика", type: "ammo", desc: "Боеприпас для гладкоствольного оружия." },
+        { name: "Ядерная батарея", type: "ammo", desc: "Боеприпас для лазерного оружия." },
+        { name: "Заряд плазмы", type: "ammo", desc: "Боеприпас для плазменного оружия." },
+        { name: "Гамма-патрон", type: "ammo", desc: "Боеприпас для гамма-пушки." },
+        { name: "2-мм эл.магн. картридж", type: "ammo", desc: "Боеприпас для Карабина Гаусса." },
+        { name: "Железнодорожный гвоздь", type: "ammo", desc: "Боеприпас для Гвоздемета." },
+        { name: "Сигнальная ракета", type: "ammo", desc: "Боеприпас для сигнального пистолета." },
+        { name: "Топливо для огнемета", type: "ammo", desc: "Боеприпас для огнеметов и инсинераторов." },
+        { name: "Ракета", type: "ammo", desc: "Боеприпас для пусковой установки." },
+        { name: "Ядерный минизаряд", type: "ammo", desc: "Боеприпас для Толстяка." },
+        { name: "Ядерный блок", type: "ammo", desc: "Топливо для силовой брони и Гатлинг-лазера." },
+        { name: "Шприцы", type: "ammo", desc: "Боеприпас для Инъекционного карабина." },
+
+        // РАСХОДНИКИ
+        { name: "Стимулятор", type: "consumable", desc: "Медикамент. Лечит 4 ОЗ или полностью снимает одну травму." },
+        { name: "Антирадин", type: "consumable", desc: "Медикамент. Снимает радиационный урон (восстанавливает макс. ОЗ)." },
+        { name: "Рад-Х", type: "consumable", desc: "Медикамент. Дает +6 Рад.СУ на 1 сцену." },
+        { name: "Винт", type: "consumable", desc: "Химикат. Позволяет выполнить одно доп. Малое действие бесплатно." },
+        { name: "Баффаут", type: "consumable", desc: "Химикат. Повышает СИЛ и ВЫН на +2 (макс 12) и макс. ОЗ на +2 на 1 сцену." },
+        { name: "Ментаты", type: "consumable", desc: "Химикат. Повышает ИНТ и ВСП на +2 (макс 12) на 1 сцену." },
+        { name: "Психо", type: "consumable", desc: "Химикат. Дает +1 БК к урону и +2 Физ.СУ на 1 сцену." },
+        { name: "Мед-Х", type: "consumable", desc: "Химикат. Дает +2 Физ.СУ на 1 сцену." },
+        { name: "Успокоин", type: "consumable", desc: "Химикат. Снижает сложность проверок Скрытности на 1." },
+        { name: "Очищенная вода", type: "consumable", desc: "Еда. Восстанавливает 1 ОЗ. Без радиации." },
+        { name: "Ядер-Кола", type: "consumable", desc: "Еда. Восстанавливает 1 ОЗ, бодрит. Риск радиации (1 БК)." },
+        { name: "Шашлык из игуаны", type: "consumable", desc: "Еда. Восстанавливает 2 ОЗ. Риск радиации (1 БК)." },
+        { name: "Коктейль Молотова", type: "weapon", desc: "Метательное. Взрывчатка. 4 БК (Энерг). Массированный, Продолжительный." },
+        { name: "Граната из бейсбольного мяча", type: "weapon", desc: "Метательное. Взрывчатка. 6 БК (Физ). Массированный." },
+        { name: "Метательный нож", type: "weapon", desc: "Метательное. Урон 3 БК (Физ). Проникающий 1." },
+        { name: "Томагавк", type: "weapon", desc: "Метательное. Урон 4 БК (Физ)." },
+        { name: "Ремонтный набор (Робот)", type: "consumable", desc: "Восстанавливает ОЗ или травмы роботов." },
+        
+        // ПРОЧЕЕ
+        { name: "Крышки", type: "misc", desc: "Базовая валюта пустошей." },
+        { name: "Заколки", type: "misc", desc: "Необходимы для взлома замков." },
+        { name: "Мультитул", type: "misc", desc: "Облегчает проверки Ремонта." },
+        { name: "Аптечка первой помощи", type: "misc", desc: "Облегчает проверки Медицины." },
+        { name: "Фирменная фляга Волт-тек", type: "misc", desc: "Емкость для воды." },
+        { name: "Голожетон Братства", type: "misc", desc: "Удостоверение личности Братства Стали." },
+        { name: "Мутафрут", type: "consumable", desc: "Еда. Радиоактивный фрукт." },
+        { name: "Удобрения", type: "misc", desc: "Используются для фермерства или создания взрывчатки." },
+        { name: "Личная безделушка", type: "misc", desc: "Восстанавливает 1 Удачу раз за квест при осмотре." },
+        { name: "Золотые карманные часы", type: "misc", desc: "Безделушка." },
+        { name: "Покореженный голодиск", type: "misc", desc: "Безделушка." },
+        { name: "Яркая бандана", type: "misc", desc: "Безделушка." },
+        { name: "Серебряный медальон", type: "misc", desc: "Безделушка." },
+        { name: "Жульнические игральные кости", type: "misc", desc: "Безделушка." }
+    ];
+
+    let currentDrawerMode = '';
+    let currentInvCategory = 'all';
+
+    function openDrawer(mode) {
+        currentDrawerMode = mode;
+        const drawer = document.getElementById('bottom-drawer');
+        const overlay = document.getElementById('drawer-overlay');
+        const tabs = document.getElementById('inv-tabs-container');
+        
+        if (mode === 'perks') {
+            document.getElementById('drawer-title').innerText = "БАЗА: СПОСОБНОСТИ";
+            tabs.style.display = 'none';
+        } else {
+            document.getElementById('drawer-title').innerText = "БАЗА: СНАРЯЖЕНИЕ";
+            tabs.style.display = 'flex';
+            currentInvCategory = 'all';
+            document.querySelectorAll('.inv-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('inv-tab-all').classList.add('active');
+        }
+        
+        document.getElementById('drawer-search').value = '';
+        overlay.classList.add('active');
+        drawer.classList.add('active');
+        filterDrawer();
+    }
+
+    function closeDrawer() {
+        document.getElementById('bottom-drawer').classList.remove('active');
+        document.getElementById('drawer-overlay').classList.remove('active');
+    }
+
+    function setInvCategory(cat) {
+        currentInvCategory = cat;
+        document.querySelectorAll('.inv-tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('inv-tab-' + cat).classList.add('active');
+        filterDrawer();
+    }
+
+    function filterDrawer() {
+        const query = document.getElementById('drawer-search').value.toLowerCase();
+        const list = document.getElementById('drawer-list');
+        list.innerHTML = '';
+
+        if (currentDrawerMode === 'perks') {
+            const stats = {
+                lvl: parseInt(document.getElementById('char-lvl').value) || 1,
+                str: parseInt(document.getElementById('attr-str').value) || 5,
+                per: parseInt(document.getElementById('attr-per').value) || 5,
+                end: parseInt(document.getElementById('attr-end').value) || 5,
+                cha: parseInt(document.getElementById('attr-cha').value) || 5,
+                int: parseInt(document.getElementById('attr-int').value) || 5,
+                agi: parseInt(document.getElementById('attr-agi').value) || 5,
+                lck: parseInt(document.getElementById('attr-luc').value) || 5,
+                origin: document.getElementById('char-origin').value
+            };
+
+            const ta = document.getElementById('text-perks');
+            const currentPerksText = ta.value.toLowerCase();
+
+            dbPerks.forEach(perk => {
+                if (perk.name.toLowerCase().includes(query) || perk.desc.toLowerCase().includes(query)) {
+                    if (perk.req(stats)) { 
+                        const item = document.createElement('div');
+                        item.className = 'drawer-item';
+                        item.innerHTML = `<div class="drawer-item-title">${perk.name}</div>
+                                          <div class="drawer-item-req">ТРЕБОВАНИЯ: ${perk.reqStr}</div>
+                                          <div class="drawer-item-desc">${perk.desc}</div>`;
+                        
+                        item.onclick = () => {
+                            if (currentPerksText.includes(`[ ${perk.name.toLowerCase()} ]`)) {
+                                showStatus('ПЕРК УЖЕ ДОБАВЛЕН!', true);
+                            } else {
+                                ta.value += (ta.value ? "\n\n" : "") + `[ ${perk.name} ]\n${perk.desc}`;
+                                autoResize.call(ta);
+                                closeDrawer();
+                            }
+                        };
+                        list.appendChild(item);
+                    }
+                }
+            });
+            if(list.innerHTML === '') list.innerHTML = '<div style="opacity: 0.5; padding: 10px;">НЕТ ДОСТУПНЫХ ПЕРКОВ ПОД ВАШИ ХАРАКТЕРИСТИКИ ИЛИ ЗАПРОС</div>';
+        
+        } else {
+            dbItems.forEach(itemData => {
+                const matchCategory = currentInvCategory === 'all' || itemData.type === currentInvCategory;
+                const matchQuery = itemData.name.toLowerCase().includes(query) || itemData.desc.toLowerCase().includes(query);
+                
+                if (matchCategory && matchQuery) {
+                    const item = document.createElement('div');
+                    item.className = 'drawer-item';
+                    item.innerHTML = `<div class="drawer-item-title">${itemData.name}</div>
+                                      <div class="drawer-item-desc">${itemData.desc}</div>`;
+                    item.onclick = () => {
+                        const ta = document.getElementById('text-inv');
+                        ta.value += (ta.value ? "\n" : "") + `- ${itemData.name} (${itemData.desc})`;
+                        autoResize.call(ta);
+                        closeDrawer();
+                    };
+                    list.appendChild(item);
+                }
+            });
+            if(list.innerHTML === '') list.innerHTML = '<div style="opacity: 0.5; padding: 10px;">НИЧЕГО НЕ НАЙДЕНО</div>';
+        }
+    }
+
+    // --- ОГРАНИЧЕНИЯ И АВТОРАСЧЕТ ХАРАКТЕРИСТИК ---
+    function enforceLimits() {
+        const origin = document.getElementById('char-origin').value;
+        const attrs = ['str', 'per', 'end', 'cha', 'int', 'agi', 'luc'];
+        
+        attrs.forEach(a => document.getElementById('attr-' + a).max = 10);
+
+        // Уникальные ограничения Супермутантов
+        if (origin === 'Супермутант') {
+            document.getElementById('attr-str').max = 12;
+            document.getElementById('attr-end').max = 12;
+            document.getElementById('attr-int').max = 6;
+            document.getElementById('attr-cha').max = 6;
+            
+            if (parseInt(document.getElementById('attr-int').value) > 6) {
+                document.getElementById('attr-int').value = 6;
+            }
+            if (parseInt(document.getElementById('attr-cha').value) > 6) {
+                document.getElementById('attr-cha').value = 6;
+            }
+        }
+
+        attrs.forEach(a => {
+            let el = document.getElementById('attr-' + a);
+            let max = parseInt(el.max) || 10;
+            let val = parseInt(el.value) || 5;
+            if (val > max) el.value = max;
+        });
+
+        calcSecondary();
+    }
+
+    function calcSecondary() {
+        let lvl = parseInt(document.getElementById('char-lvl').value) || 1;
+        let str = parseInt(document.getElementById('attr-str').value) || 5;
+        let per = parseInt(document.getElementById('attr-per').value) || 5;
+        let end = parseInt(document.getElementById('attr-end').value) || 5;
+        let agi = parseInt(document.getElementById('attr-agi').value) || 5;
+        let lck = parseInt(document.getElementById('attr-luc').value) || 5;
+        let origin = document.getElementById('char-origin').value;
+
+        document.getElementById('stat-init').value = per + agi;
+        document.getElementById('stat-def').value = agi >= 9 ? 2 : 1;
+        document.getElementById('hp-max').value = end + lck + (lvl > 1 ? lvl - 1 : 0);
+
+        let meleeBonus = 0;
+        if (str >= 11) meleeBonus = 3;
+        else if (str >= 9) meleeBonus = 2;
+        else if (str >= 7) meleeBonus = 1;
+        document.getElementById('stat-melee').innerText = "+" + meleeBonus + " БК";
+
+        let carryWeight = 150 + (str * 10);
+        if (origin === 'Мистер Помощник') carryWeight = 150; 
+        document.getElementById('stat-carry').innerText = carryWeight + " ф.";
+        
+        calculateTNs();
+        updateVisualHP();
+    }
+
+    // Слушатели для авто-расчета
+    document.querySelectorAll('.special-box-inner input, #char-lvl').forEach(el => {
+        el.addEventListener('input', enforceLimits);
+    });
+
     // --- ТАБЫ И АВТОРАСШИРЕНИЕ ---
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        
         document.getElementById('tab-' + tabId).classList.add('active');
         document.getElementById('btn-tab-' + tabId).classList.add('active');
-        
         const textarea = document.getElementById('text-' + tabId);
         if(textarea) { autoResize.call(textarea); }
     }
@@ -357,29 +905,6 @@
         setTimeout(() => autoResize.call(ta), 100);
     });
 
-    // --- ТЕМЫ ---
-    function setTheme(color) {
-        document.documentElement.setAttribute('data-theme', color);
-        localStorage.setItem('pipboy-theme', color);
-    }
-    const savedTheme = localStorage.getItem('pipboy-theme') || 'green';
-    setTheme(savedTheme);
-
-    // --- ГЛИТЧ ---
-    function triggerLocalGlitch() {
-        const targets = document.querySelectorAll('.glitch-target');
-        if(targets.length === 0) return;
-        const numGlitches = Math.floor(Math.random() * 3) + 1;
-        for(let i = 0; i < numGlitches; i++) {
-            const randomTarget = targets[Math.floor(Math.random() * targets.length)];
-            randomTarget.classList.add('local-glitch-active');
-            setTimeout(() => { randomTarget.classList.remove('local-glitch-active'); }, Math.random() * 200 + 100);
-        }
-        setTimeout(triggerLocalGlitch, Math.random() * 4000 + 2000);
-    }
-    setTimeout(triggerLocalGlitch, 2000);
-
-    // --- НАВЫКИ ---
     const skills = [
         ["Атлетика", "athletics", "str", "СИЛ"], ["Без оружия", "unarmed", "str", "СИЛ"],
         ["Хол. оружие", "melee", "str", "СИЛ"], ["Тяж. оружие", "bigguns", "end", "ВЫН"],
@@ -434,24 +959,36 @@
         input.addEventListener('input', () => { calculateTNs(); if (input.id === 'hp-cur' || input.id === 'hp-max') updateVisualHP(); });
     });
 
-    calculateTNs(); updateVisualHP();
-
     // --- СОХРАНЕНИЕ / ЗАГРУЗКА ---
-    
-    function showStatus(msg, isError = false) {
-        const statusEl = document.getElementById('cloud-status');
-        statusEl.style.color = isError ? 'red' : 'yellow';
-        statusEl.textContent = msg;
-        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+    function saveWithConfirm() {
+        const slot = document.getElementById('save-slot').value;
+        const currentName = document.getElementById('char-name').value.trim() || "БЕЗ ИМЕНИ";
+        const savedName = profileNames[slot];
+
+        if (savedName && savedName !== "ПРОФИЛЬ " + slot && savedName !== "БЕЗ ИМЕНИ" && savedName !== currentName) {
+            if (!confirm(`В слоте ${slot} сохранен персонаж "${savedName}".\n\nПерезаписать его как "${currentName}"?`)) {
+                return;
+            }
+        }
+
+        profileNames[slot] = currentName;
+        const namesStr = JSON.stringify(profileNames);
+
+        if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
+            tg.CloudStorage.setItem('profile_names', namesStr, () => {
+                saveDataToSlot(slot);
+            });
+        } else {
+            localStorage.setItem('profile_names', namesStr);
+            saveDataToSlot(slot);
+        }
+        updateProfileSelect();
     }
 
-    function saveToCloud() {
-        const slot = document.getElementById('save-slot').value;
+    function saveDataToSlot(slot) {
         const data = {};
-        
-        // Исключаем выпадающий список слотов из сохранения
-        document.querySelectorAll('input, textarea').forEach(el => { 
-            if (el.id && el.id !== 'save-slot' && el.type !== 'file') {
+        document.querySelectorAll('input, textarea, select').forEach(el => { 
+            if (el.id && el.id !== 'save-slot' && el.type !== 'file' && el.id !== 'drawer-search') {
                 data[el.id] = el.value; 
             }
         });
@@ -460,17 +997,12 @@
         
         if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
             tg.CloudStorage.setItem('char_data_' + slot, dataString, (err, success) => {
-                if (err) {
-                    showStatus('ОШИБКА СОХРАНЕНИЯ', true);
-                    console.error(err);
-                } else {
-                    showStatus(`ПРОФИЛЬ ${slot} СОХРАНЕН В ОБЛАКО`);
-                    setTimeout(toggleMenu, 1000);
-                }
+                if (err) { showStatus('ОШИБКА СОХРАНЕНИЯ', true); } 
+                else { showStatus(`ПРОФИЛЬ СОХРАНЕН`); setTimeout(toggleMenu, 1000); }
             });
         } else {
             localStorage.setItem('fallout_tma_save_' + slot, dataString);
-            showStatus(`ПРОФИЛЬ ${slot} СОХРАНЕН ЛОКАЛЬНО`);
+            showStatus(`ПРОФИЛЬ СОХРАНЕН ЛОКАЛЬНО`);
             setTimeout(toggleMenu, 1000);
         }
     }
@@ -480,26 +1012,14 @@
         
         if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
             tg.CloudStorage.getItem('char_data_' + slot, (err, value) => {
-                if (err) {
-                    showStatus('ОШИБКА ЗАГРУЗКИ', true);
-                    console.error(err);
-                } else if (value) {
-                    applyData(value);
-                    showStatus(`ПРОФИЛЬ ${slot} ЗАГРУЖЕН`);
-                    setTimeout(toggleMenu, 1000);
-                } else {
-                    showStatus(`ПРОФИЛЬ ${slot} ПУСТ`, true);
-                }
+                if (err) { showStatus('ОШИБКА ЗАГРУЗКИ', true); } 
+                else if (value) { applyData(value); showStatus(`ПРОФИЛЬ ЗАГРУЖЕН`); setTimeout(toggleMenu, 1000); } 
+                else { showStatus(`СЛОТ ${slot} ПУСТ`, true); }
             });
         } else {
             const value = localStorage.getItem('fallout_tma_save_' + slot);
-            if (value) {
-                applyData(value);
-                showStatus(`ПРОФИЛЬ ${slot} ЗАГРУЖЕН`);
-                setTimeout(toggleMenu, 1000);
-            } else {
-                showStatus(`ПРОФИЛЬ ${slot} ПУСТ`, true);
-            }
+            if (value) { applyData(value); showStatus(`ПРОФИЛЬ ЗАГРУЖЕН`); setTimeout(toggleMenu, 1000); } 
+            else { showStatus(`СЛОТ ${slot} ПУСТ`, true); }
         }
     }
 
@@ -510,12 +1030,24 @@
                 const el = document.getElementById(key); 
                 if (el && el.id !== 'save-slot' && el.type !== 'file') el.value = data[key]; 
             }
-            calculateTNs(); updateVisualHP(); 
+            enforceLimits(); 
             document.querySelectorAll('textarea.auto-expand').forEach(ta => autoResize.call(ta));
         } catch (err) {
             showStatus('ОШИБКА ЧТЕНИЯ ДАННЫХ', true);
         }
     }
+
+    function setTheme(color) {
+        document.documentElement.setAttribute('data-theme', color);
+        localStorage.setItem('pipboy-theme', color);
+    }
+
+    // Первичный запуск
+    setTheme(localStorage.getItem('pipboy-theme') || 'green');
+    initProfiles(() => {
+        enforceLimits();
+        updateVisualHP();
+    });
 
 </script>
 
